@@ -257,7 +257,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 console.error("Failed to auto-refresh messages", err);
             }
         }
-    }, 5000);
+    }, 3000);
 
     const logoutBtn = document.getElementById("logoutBtn");
     logoutBtn.addEventListener("click", () => {
