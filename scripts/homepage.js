@@ -232,32 +232,95 @@ document.addEventListener("DOMContentLoaded", async () => {
 
                     messagesContainer.insertAdjacentHTML("beforeend", bubbleHTML);
                 });
-
-                // auto scroll to latest
                 messagesContainer.scrollTop = messagesContainer.scrollHeight;
             }
         } catch (err) {
             console.error("Failed to load crib messages", err);
         }
     }
-    // every 5 seconds, check and reload messages
-    setInterval(async () => {
-        if (activeCribId) {
-            try {
-                // find the active card to get cribName and img
-                const activeCard = document.querySelector(`.chat-card[data-crib-id="${activeCribId}"]`);
-                if (activeCard) {
-                    await loadMessages(
-                        activeCribId,
-                        activeCard.dataset.cribName,
-                        activeCard.dataset.img
-                    );
+
+    async function refreshMessages(cribId, cribName, cribImg) {
+    try {
+        const cribRes = await fetch(`https://yochat-api.onrender.com/crib/${cribId}`);
+        const cribData = await cribRes.json();
+
+        if (cribRes.ok && cribData.messages) {
+            const messagesContainer = document.querySelector(".chat-messages");
+
+            // measure distance from bottom
+            const distanceFromBottom = messagesContainer.scrollHeight - messagesContainer.scrollTop - messagesContainer.clientHeight;
+            const isNearBottom = distanceFromBottom < 100;
+
+            messagesContainer.innerHTML = "";  // refresh messages
+
+            let previousUserId = null;
+
+            cribData.messages.forEach((msg) => {
+                const isMe = msg.userId === user._id;
+                const isFirstOfSequence = previousUserId !== msg.userId;
+                previousUserId = msg.userId;
+
+                let timestamp = "";
+                if (msg.dateTime) {
+                    const messageDate = new Date(msg.dateTime);
+                    const now = new Date();
+                    const isToday = messageDate.toDateString() === now.toDateString();
+                    timestamp = isToday
+                        ? new Intl.DateTimeFormat("en-PH", { hour: "numeric", minute: "numeric", hour12: true }).format(messageDate)
+                        : new Intl.DateTimeFormat("en-PH", { month: "long", day: "numeric", year: "numeric" }).format(messageDate);
                 }
-            } catch (err) {
-                console.error("Failed to auto-refresh messages", err);
+
+                const timeHtml = isFirstOfSequence && timestamp
+                    ? `<span class="small text-muted">${timestamp}</span>`
+                    : "";
+
+                const bubbleHTML = `
+                <div class="message ${isMe ? "me" : "other"} d-flex align-items-end mb-2">
+                    ${
+                        !isMe && isFirstOfSequence
+                            ? `<img src="${msg.pfpLink}" alt="${msg.username}" class="rounded-circle me-2" width="30" height="30">`
+                            : !isMe
+                            ? `<div style="width:30px; margin-right:8px;"></div>`
+                            : ""
+                    }
+                    <div>
+                        ${
+                            isFirstOfSequence && !isMe
+                                ? `<div class="fw-semibold text-white username">${msg.username}</div>`
+                                : ""
+                        }
+                        <div class="bubble">${msg.message}</div>
+                    </div>
+                </div>
+                `;
+
+                messagesContainer.insertAdjacentHTML("beforeend", bubbleHTML);
+            });
+
+            // only scroll if the user was near the bottom
+            if (isNearBottom) {
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
             }
         }
-    }, 3000);
+    } catch (err) {
+        console.error("Failed to refresh messages", err);
+    }
+}
+
+setInterval(async () => {
+    if (activeCribId) {
+        const activeCard = document.querySelector(`.chat-card[data-crib-id="${activeCribId}"]`);
+        if (activeCard) {
+            await refreshMessages(
+                activeCribId,
+                activeCard.dataset.cribName,
+                activeCard.dataset.img
+            );
+        }
+    }
+}, 3000);
+
+
 
     const logoutBtn = document.getElementById("logoutBtn");
     logoutBtn.addEventListener("click", () => {
