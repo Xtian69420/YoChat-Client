@@ -275,24 +275,35 @@ document.addEventListener("DOMContentLoaded", async () => {
                     : "";
 
                 const bubbleHTML = `
-                <div class="message ${isMe ? "me" : "other"} d-flex align-items-end mb-2">
-                    ${
-                        !isMe && isFirstOfSequence
-                            ? `<img src="${msg.pfpLink}" alt="${msg.username}" class="rounded-circle me-2" width="30" height="30">`
-                            : !isMe
-                            ? `<div style="width:30px; margin-right:8px;"></div>`
-                            : ""
-                    }
-                    <div>
+                    <div class="message ${isMe ? "me" : "other"} d-flex align-items-end mb-2">
                         ${
-                            isFirstOfSequence && !isMe
-                                ? `<div class="fw-semibold text-white username">${msg.username}</div>`
+                            !isMe && isFirstOfSequence
+                                ? `<img src="${msg.pfpLink}" alt="${msg.username}" class="rounded-circle me-2" width="30" height="30">`
+                                : !isMe
+                                ? `<div style="width:30px; margin-right:8px;"></div>`
                                 : ""
                         }
-                        <div class="bubble">${msg.message}</div>
+                        <div>
+                            ${
+                                isFirstOfSequence && !isMe
+                                    ? `<div class="d-flex align-items-center mb-1">
+                                        <span class="fw-semibold text-white username">${msg.username}</span>
+                                        <span class="ms-2" style="font-size:9px; color:white;">${timestamp}</span>
+                                    </div>`
+                                    : ""
+                            }
+                            ${
+                                isFirstOfSequence && isMe
+                                    ? `<div class="d-flex justify-content-end mb-1">
+                                        <span style="font-size:9px; color:white;">${timestamp}</span>
+                                    </div>`
+                                    : ""
+                            }
+                            <div class="bubble">${msg.message}</div>
+                        </div>
                     </div>
-                </div>
                 `;
+
 
                 messagesContainer.insertAdjacentHTML("beforeend", bubbleHTML);
             });
