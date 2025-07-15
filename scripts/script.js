@@ -1,10 +1,9 @@
-const api = 'https://yochat-api.onrender.com';
+const api = 'https://yochat-zp3d.onrender.com';
 
-// check on page load if already logged in
 document.addEventListener('DOMContentLoaded', () => {
     const user = localStorage.getItem('yochat_user');
     if (user) {
-        // user already logged in, go straight to homepage
+
         window.location.href = 'pages/homepage.html';
     }
 });
@@ -31,11 +30,9 @@ document.getElementById('signupForm').addEventListener('submit', async (e) => {
 
         const data = await res.json();
         if (res.ok && data.user) {
-            // store user data
             localStorage.setItem('yochat_user', JSON.stringify(data.user));
             form.reset();
             bootstrap.Modal.getInstance(document.getElementById('signupModal')).hide();
-            // redirect to homepage
             hideLoading();
             window.location.href = 'pages/homepage.html';
         }

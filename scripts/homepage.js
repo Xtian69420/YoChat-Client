@@ -40,7 +40,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     profilePicNav.addEventListener("click", async () => {
         try {
-            const res = await fetch(`https://yochat-api.onrender.com/user/${user._id}`);
+            const res = await fetch(`https://yochat-zp3d.onrender.com/user/${user._id}`);
             const data = await res.json();
             if (res.ok) {
                 profileModalPic.src = data.pfpLink;
@@ -99,7 +99,7 @@ document.addEventListener("DOMContentLoaded", async () => {
                 gender: editGender.value,
                 pfpLink: window.newProfileImage || profileModalPic.src
             };
-            const res = await fetch(`https://yochat-api.onrender.com/user/update/${user._id}`, {
+            const res = await fetch(`https://yochat-zp3d.onrender.com/user/update/${user._id}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(updated)
@@ -138,7 +138,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     async function loadMessages(cribId, cribName, cribImg) {
         try {
-            const cribRes = await fetch(`https://yochat-api.onrender.com/crib/${cribId}`);
+            const cribRes = await fetch(`https://yochat-zp3d.onrender.com/crib/${cribId}`);
             const cribData = await cribRes.json();
 
             if (cribRes.ok && cribData.messages) {
@@ -241,7 +241,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     async function refreshMessages(cribId, cribName, cribImg) {
     try {
-        const cribRes = await fetch(`https://yochat-api.onrender.com/crib/${cribId}`);
+        const cribRes = await fetch(`https://yochat-zp3d.onrender.com/crib/${cribId}`);
         const cribData = await cribRes.json();
 
         if (cribRes.ok && cribData.messages) {
@@ -308,7 +308,6 @@ document.addEventListener("DOMContentLoaded", async () => {
                 messagesContainer.insertAdjacentHTML("beforeend", bubbleHTML);
             });
 
-            // only scroll if the user was near the bottom
             if (isNearBottom) {
                 messagesContainer.scrollTop = messagesContainer.scrollHeight;
             }
@@ -340,7 +339,7 @@ setInterval(async () => {
     });
 
     try {
-        const res = await fetch(`https://yochat-api.onrender.com/cribs/user/${user._id}`);
+        const res = await fetch(`https://yochat-zp3d.onrender.com/cribs/user/${user._id}`);
         const data = await res.json();
 
         if (res.ok && data.cribs) {
@@ -387,7 +386,6 @@ setInterval(async () => {
         console.error("Failed to load cribs", err);
     }
 
-    // handle message sending
     document.querySelector(".chat-input").addEventListener("submit", async (e) => {
         e.preventDefault();
         const input = e.target.querySelector("input");
@@ -395,7 +393,7 @@ setInterval(async () => {
         if (!message || !activeCribId) return;
 
         try {
-            await fetch(`https://yochat-api.onrender.com/crib/${activeCribId}/message`, {
+            await fetch(`https://yochat-zp3d.onrender.com/crib/${activeCribId}/message`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -428,7 +426,7 @@ document.getElementById("createCribForm").addEventListener("submit", async (e) =
 
     try {
         showLoading();
-        const res = await fetch("https://yochat-api.onrender.com/crib/create", {
+        const res = await fetch("https://yochat-zp3d.onrender.com/crib/create", {
             method: "POST",
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify({ name, key, creatorId })
@@ -457,7 +455,7 @@ document.getElementById("joinCribForm").addEventListener("submit", async (e) => 
 
     try {
         showLoading();
-        const res = await fetch("https://yochat-api.onrender.com/crib/join", {
+        const res = await fetch("https://yochat-zp3d.onrender.com/crib/join", {
             method: "POST",
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify({ name, key, userId })
